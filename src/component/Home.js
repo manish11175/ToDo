@@ -171,7 +171,11 @@ export default function Home() {
                 <div className="col">
                   <button
                     class="btn btn-outline-danger mt-2"
-                    onClick={() => setShowEdit(false)}
+                    onClick={() => {
+                      setShowEdit(false);
+                      setNewTask("");
+                    }
+                  }
                   >
                     close
                   </button>
