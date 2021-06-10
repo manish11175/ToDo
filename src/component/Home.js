@@ -154,6 +154,7 @@ export default function Home() {
           }
         });
         console.log(arr);
+        localStorage.setItem("taskData", JSON.stringify(arr));
         return arr;
       });
       setNewTask("");
