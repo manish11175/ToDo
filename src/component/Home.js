@@ -1,6 +1,47 @@
 import React, { useState } from "react";
 import { ItemWidget, CompleteWidget, UpcomingWidget } from "./Widget";
+const preData = [
+  { id: 1, title: "Drinking Water", date: "12-012021", complete: false },
+  {
+    id: 2,
+    title: "homework",
+    date: "12-012021",
+    complete: false,
+  },
+  {
+    id: 3,
+    title: "assignment ",
+    date: "12-012021",
+    complete: false,
+  },
+  {
+    id: 4,
+    title: "homework",
+    date: "12-012021",
+    complete: false,
+  },
+  {
+    id: 5,
+    title: "assignment ",
+    date: "12-012021",
+    complete: false,
+  },
+];
+// 
 
+const retrievedObject = localStorage.getItem("taskData");
+let retrieved = JSON.parse(retrievedObject);
+if(retrieved===null){
+  localStorage.setItem("taskData", JSON.stringify(preData));
+  retrieved= JSON.parse(localStorage.getItem("taskData"));
+}
+
+const completeObject = localStorage.getItem("comData");
+let comretrieved = JSON.parse(completeObject);
+if(comretrieved===null){
+  localStorage.setItem("comData", JSON.stringify([]));
+  comretrieved= JSON.parse(localStorage.getItem("comData"));
+}
 export default function Home() {
   let date = new Date();
   date = date.toLocaleDateString();
@@ -8,59 +49,48 @@ export default function Home() {
   const [newtask, setNewTask] = useState("");
   const [edittask, setEditTask] = useState();
   const [showEdit, setShowEdit] = useState(false);
-  const [task, setTask] = useState([
-    { id: 1, title: "Drinking Water", date: "12-012021", complete: false },
-    {
-      id: 2,
-      title: "homework",
-      date: "12-012021",
-      complete: false,
-    },
-    {
-      id: 3,
-      title: "assignment ",
-      date: "12-012021",
-      complete: false,
-    },
-    {
-      id: 4,
-      title: "homework",
-      date: "12-012021",
-      complete: false,
-    },
-    {
-      id: 5,
-      title: "assignment ",
-      date: "12-012021",
-      complete: false,
-    },
-  ]);
+  const [task, setTask] = useState(retrieved!==null?retrieved:[]);
 
-  const [completetask, setCompleteTask] = useState([]);
+  const [completetask, setCompleteTask] = useState(comretrieved!==null?comretrieved:[]);
+
   const [upcomingtask, setUpcoming] = useState([]);
+
   const addTask = (e) => {
     e.preventDefault();
     if (newtask !== "") {
       setTask((oldTask) => {
         return [...oldTask, { title: newtask, id: oldTask.length + 1 }];
       });
+      
+      var retrievedObject = localStorage.getItem("taskData");
+      var retrieved=JSON.parse(retrievedObject);
+      retrieved.push({ title: newtask, id: retrieved.length + 1 });
+      localStorage.setItem("taskData", JSON.stringify(retrieved));
       setNewTask("");
     }
   };
+
   const deleteTask = (id) => {
     setTask((oldTask) => {
-      return oldTask.filter((item) => {
+      const filterData=oldTask.filter((item) => {
         return item.id !== id;
       });
+      localStorage.setItem("taskData", JSON.stringify(filterData));
+      return filterData;
     });
+    
   };
-  const deleteUpcomingTask = (id) => {
+  const deleteComTask = (id) => {
     setCompleteTask((oldTask) => {
-      return oldTask.filter((item) => {
+      const filterData=oldTask.filter((item) => {
         return item.id !== id;
       });
+      localStorage.setItem("comData", JSON.stringify(filterData));
+      return filterData;
     });
+    
   };
+
 
   const completedTask = (id) => {
     setCompleteTask((oldTask) => {
@@ -71,13 +101,19 @@ export default function Home() {
       });
       const time = new Date();
       data1[0].date = time.toLocaleString();
-
+    
+      var comObject = localStorage.getItem("comData");
+      var comretrieved=JSON.parse(comObject);
+      comretrieved.push(data1[0]);
+      localStorage.setItem("comData", JSON.stringify(comretrieved));
       return [...oldTask, data1[0]];
     });
     setTask((oldTask) => {
-      return oldTask.filter((item) => {
+      const filterData= oldTask.filter((item) => {
         return item.id !== id;
       });
+      localStorage.setItem("taskData", JSON.stringify(filterData));
+      return filterData;
     });
   };
 
@@ -146,7 +182,7 @@ export default function Home() {
               title={item.title}
               id={item.id}
               date={item.date}
-              delete={deleteUpcomingTask}
+              delete={deleteComTask}
             />
           );
         })}
@@ -174,8 +210,7 @@ export default function Home() {
                     onClick={() => {
                       setShowEdit(false);
                       setNewTask("");
-                    }
-                  }
+                    }}
                   >
                     close
                   </button>
